@@ -109,7 +109,7 @@ module Precious
       @redirects_enabled = settings.wiki_options.fetch(:redirects_enabled, true)
       @per_page_uploads = settings.wiki_options[:per_page_uploads]
       @show_local_time = settings.wiki_options.fetch(:show_local_time, false)
-      
+
       @wiki_title = settings.wiki_options.fetch(:title, 'Gollum Wiki')
 
       forbid unless @allow_editing || request.request_method == 'GET'
@@ -243,7 +243,7 @@ module Precious
         halt 500 unless tempfile.is_a? Tempfile
 
         if wiki.per_page_uploads
-          dir = request.referer.match(/^https?:\/\/#{request.host_with_port}\/(.*)/)[1]          
+          dir = request.referer.match(/^https?:\/\/#{request.host_with_port}\/(.*)/)[1]
           # remove base path if it is set
           dir.sub!(/^#{wiki.base_path}/, '') if wiki.base_path
           # remove base_url and gollum/* subpath if necessary
@@ -557,8 +557,11 @@ module Precious
 
         if path
           @path = Pathname.new(path).cleanpath.to_s
-          check_path   = wiki.page_file_dir ? ::File.join(wiki.page_file_dir, @path, '/') : "#{@path}/"
-          @results.select!  {|result| result.path.start_with?(check_path) }
+          check_path = wiki.page_file_dir ? ::File.join(wiki.page_file_dir, @path, '/') : "#{@path}/"
+          page_path = "#{check_path[0...-1]}.md"
+          page = @results.find { |result| result.path == page_path }
+          @content = page&.formatted_data
+          @results.select! { |result| result.path.start_with?(check_path) }
         end
 
         @results.sort_by! {|result| result.name.downcase}
