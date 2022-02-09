@@ -558,10 +558,13 @@ module Precious
         if path
           @path = Pathname.new(path).cleanpath.to_s
           check_path = wiki.page_file_dir ? ::File.join(wiki.page_file_dir, @path, '/') : "#{@path}/"
-          page_path = "#{check_path[0...-1]}.md"
-          page = @results.find { |result| result.path == page_path }
-          @content = page&.formatted_data
           @results.select! { |result| result.path.start_with?(check_path) }
+          folder_name = /([^\/]+)\/$/.match(check_path)&.[](1)
+          if (folder_name)
+            page_path = "#{check_path}#{folder_name}.md"
+            page = @results.find { |result| result.path == page_path }
+            @content = page&.formatted_data
+          end
         end
 
         @results.sort_by! {|result| result.name.downcase}
