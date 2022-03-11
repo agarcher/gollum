@@ -247,7 +247,7 @@ module Precious
           # remove base path if it is set
           dir.sub!(/^#{wiki.base_path}/, '') if wiki.base_path
           # remove base_url and gollum/* subpath if necessary
-          dir.sub!(/^\/gollum\/[-\w]+\//, '')
+          dir.sub!(/^\/?gollum\/[-\w]+\//, '')
           # remove file extension
           dir.sub!(/#{::File.extname(dir)}$/, '')
           # revert escaped whitespaces
